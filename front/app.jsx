@@ -1,0 +1,1 @@
+ReactDOM.render(<SignPage/>, document.querySelector('#app'))
