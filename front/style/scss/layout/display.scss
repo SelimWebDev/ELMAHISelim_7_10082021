@@ -1,0 +1,31 @@
+#display {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 600px;
+
+    & article {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        border: 1px solid rgb(231, 231, 231);
+
+        & #author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        & #text {
+            margin-bottom: 5px;
+        }
+
+        & div {
+            display: flex;
+            justify-content: space-between;
+
+            & #like {
+                display: flex;
+            }
+        }
+    }
+}

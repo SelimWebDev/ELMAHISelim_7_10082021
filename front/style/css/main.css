@@ -1,0 +1,84 @@
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+#header {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 50px;
+}
+#header div {
+  position: fixed;
+  top: 38px;
+  right: 0px;
+}
+
+#form {
+  align-self: center;
+  border: 2px solid grey;
+  padding: 0px 10px 0px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 800px;
+  height: 500px;
+}
+#form h2 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  display: flex;
+  justify-content: center;
+}
+#form div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+#form div label {
+  margin-bottom: 8px;
+  font-size: larger;
+  color: #444444;
+}
+#form div input {
+  height: 20px;
+}
+#form #dbButCtn {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+#form button {
+  width: 150px;
+  height: 35px;
+}
+
+#display {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 600px;
+}
+#display article {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  border: 1px solid #e7e7e7;
+}
+#display article #author {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+#display article #text {
+  margin-bottom: 5px;
+}
+#display article div {
+  display: flex;
+  justify-content: space-between;
+}
+#display article div #like {
+  display: flex;
+}
+
+/*# sourceMappingURL=main.css.map */

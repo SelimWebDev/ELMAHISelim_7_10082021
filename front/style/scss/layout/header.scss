@@ -1,0 +1,15 @@
+//HEADER//
+
+#header {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 50px;
+
+    & div {
+        position: fixed;
+        top: 38px;
+        right: 0px;
+    }
+}
+
+/////////////
