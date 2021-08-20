@@ -54,30 +54,31 @@
   height: 35px;
 }
 
-#display {
+#all {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 600px;
+  height: auto;
 }
-#display article {
+#all article {
+  margin-bottom: 5px;
   display: flex;
   flex-direction: column;
   height: auto;
   border: 1px solid #e7e7e7;
 }
-#display article #author {
+#all article #author {
   font-weight: bold;
   margin-bottom: 5px;
 }
-#display article #text {
+#all article #text {
   margin-bottom: 5px;
 }
-#display article div {
+#all article div {
   display: flex;
   justify-content: space-between;
 }
-#display article div #like {
+#all article div #like {
   display: flex;
 }
 

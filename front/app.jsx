@@ -28,16 +28,144 @@ class LoginPage extends React.Component {
 ////////////////////////////////////
 
 class MainPage extends React.Component {
+
+    constructor (props) {
+        super(props)
+        this.state = {
+            error: null,
+            isLoaded: false,
+
+            items: [],             // conteneur pour le retour de la requette get all
+
+            contain: '',           // les ocnteneur pour l'envoie de la requete post
+            date: ''
+        }
+    }
+
+    setStateAndSendMsg(){
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        today = yyyy + '/' + mm + '/' + dd;
+
+        this.setState({
+            contain: document.getElementById('contain').value,
+            date: today,
+        }, function(){
+            fetch("http://localhost:3000/api/msg",
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+
+                method: "POST",
+
+                body: JSON.stringify({
+                    contain: this.state.contain,
+                    date: this.state.date,
+                })
+            })
+            .then( () => this.getAllAndSetState())
+            .catch(error => this.setState({ error }) )
+        })
+    }
+
+    getAllAndSetState(){
+        fetch("http://localhost:3000/api/msg") // requete GET au serveur
+            .then((res) => res.json())
+            .then((msgArray) => this.setState({
+                isLoaded: true,
+                items: msgArray
+            }),
+            (error) => {
+                this.setState({
+                    isLoaded: true,
+                    error
+                })
+            })
+    }
+
+    componentDidMount(){
+        this.getAllAndSetState();
+    }
+
     render(){
         return (
             <React.Fragment>
                 <Header/>
-                <AllSection/>
+                <AllSection items={this.state.items}/>
+                <form id="write">
+                    <div>
+                        <label htmlFor="contain">écrivez un message : </label>
+                        <input id="contain" name="contain" type="text"></input>
+                    </div>
+                    <button type="button" onClick={() => {this.setStateAndSendMsg()}}>Envoyer</button>
+                </form>
             </React.Fragment>
         )
     }
 }
 
+
+class WriteSection extends React.Component {
+
+    constructor (props) {
+        super(props)
+        this.state = {
+            error: null,
+            contain: '',
+            date: '',
+        }
+    }
+
+    refresh(){
+        ReactDOM.render(<MainPage/>, document.querySelector('#app'))
+    }
+
+    sendMsg(){
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        today = yyyy + '/' + mm + '/' + dd;
+
+        this.setState({
+            contain: document.getElementById('contain').value,
+            date: today,
+        }, function(){
+            fetch("http://localhost:3000/api/msg",
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+
+                method: "POST",
+
+                body: JSON.stringify({
+                    contain: this.state.contain,
+                    date: this.state.date,
+                })
+            })
+            .then( () => this.refresh())
+            .catch(error => this.setState({ error }) )
+        })
+    }
+
+    render(){
+        return (
+            <form id="write">
+                <div>
+                    <label htmlFor="contain">écrivez un message : </label>
+                    <input id="contain" name="contain" type="text"></input>
+                </div>
+                <button type="button" onClick={() => {this.sendMsg()}}>Envoyer</button>
+            </form>
+        )
+    }
+}
 ///////////////////////////////////////
 
 class Header extends React.Component {
@@ -216,55 +344,10 @@ class LoginForm extends React.Component {
 
 //////////////////////////////////////////
 
-
-
-class AllSection extends React.Component {
-
-    constructor (props) {
-        super(props)
-        this.state = [
-            {
-                id: 0,
-                contain: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-                date: "17/08/2021",
-                like: 0,
-                userLike: [],
-                authorId: 1,
-                authorName: "Hector"
-            },
-            {
-                id: 1,
-                contain: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum",
-                date: "17/08/2021",
-                like: 0,
-                userLike: [],
-                authorId: 1,
-                authorName: "Malin"
-            },
-            {
-                id: 2,
-                contain: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-                date: "17/08/2021",
-                like: 0,
-                userLike: [],
-                authorId: 1,
-                authorName: "Pipo"
-            },
-            {
-                id: 3,
-                contain: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-                date: "17/08/2021",
-                like: 0,
-                userLike: [],
-                authorId: 1,
-                authorName: "Wingarduim"
-            }
-        ]
-    }
-    
-    render(){
-        const htmlMsg = this.state.map((msg) => {
-            return (
+function AllSection(props) {
+    return (
+        <div id="all">
+            {props.items.map(msg =>(
                 <article key={msg.id}>
                     <span id="author">{msg.authorName}</span>
                     <span id="text">{msg.contain}</span>
@@ -276,16 +359,13 @@ class AllSection extends React.Component {
                         <span id="date">{msg.date}</span>
                     </div>
                 </article>
-            )
-        })
-        return(
-            <div id="display">
-                {htmlMsg}
-            </div>
-        )
-    }
+            ))}
+        </div>
+    )
 }
+
+//////////////////////////////////////////////
 
 
 //////////////////////////////////////////
-ReactDOM.render(<LoginPage/>, document.querySelector('#app'))
+ReactDOM.render(<MainPage/>, document.querySelector('#app'))
