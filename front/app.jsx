@@ -42,12 +42,14 @@ class MainPage extends React.Component {
         }
     }
 
+    
+
     setStateAndSendMsg(){
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, '0');
         var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
         var yyyy = today.getFullYear();
-        today = yyyy + '/' + mm + '/' + dd;
+        today = yyyy + '/' + mm + '/' + dd;                     // configure la date d'aujourd'hui
 
         this.setState({
             contain: document.getElementById('contain').value,
@@ -108,7 +110,7 @@ class MainPage extends React.Component {
             <React.Fragment>
                 <Header/>
                 <div id="conteneur">
-                    <AllSection items={this.state.items}/>
+                    <AllSection items={this.state.items}/>               
                     <form id="write">
                         <div>
                             <label htmlFor="contain">écrivez un message : </label>
@@ -149,10 +151,26 @@ function AllSection(props) {
 ///////////////////////////////////////
 
 class Header extends React.Component {
+    
+    componentDidMount(){
+        if (!localStorage.getItem('token')){
+            document.getElementById("disconnect").style.display = "none";
+        }
+    }
+
+    deconnect(){                                                           // fonction pour se déconnecter
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        ReactDOM.render(<LoginPage/>, document.querySelector('#app'))
+    };
+
     render() { 
         return <div id="header">
             <h1>Groupomania</h1>
-            <div>toto</div>
+            <div id="disconnect">
+                <i onClick={() => {this.deconnect()}} class="fas fa-power-off fa-2x"></i>
+            </div>
         </div>
     }
 }
@@ -269,12 +287,17 @@ class LoginForm extends React.Component {
         })
 
 
-        .then((res) => res.json())
+        
         .then((res) => {
-            localStorage.setItem("token", res.token)
-            localStorage.setItem("userId", res.userId)
-            localStorage.setItem("userName", res.userName)
-            ReactDOM.render(<MainPage/>, document.querySelector('#app'))
+            if (res.ok){
+                res.json()
+                .then((res) => {
+                    localStorage.setItem("token", res.token)
+                    localStorage.setItem("userId", res.userId)
+                    localStorage.setItem("userName", res.userName)
+                    ReactDOM.render(<MainPage/>, document.querySelector('#app'))
+                })
+            }
         })
         .catch(function(err){
             console.log(err)
