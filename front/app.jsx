@@ -57,7 +57,8 @@ class MainPage extends React.Component {
             {
                 headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.token
                 },
 
                 method: "POST",
@@ -65,6 +66,8 @@ class MainPage extends React.Component {
                 body: JSON.stringify({
                     contain: this.state.contain,
                     date: this.state.date,
+                    authorName: localStorage.getItem("userName"),
+                    authorId: localStorage.getItem("userId")
                 })
             })
             .then( () => this.getAllAndSetState())
@@ -73,7 +76,16 @@ class MainPage extends React.Component {
     }
 
     getAllAndSetState(){
-        fetch("http://localhost:3000/api/msg") // requete GET au serveur
+        fetch("http://localhost:3000/api/msg", // requete GET au serveur
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.token
+                },
+
+                method: "GET",
+            })
             .then((res) => res.json())
             .then((msgArray) => this.setState({
                 isLoaded: true,
@@ -95,77 +107,45 @@ class MainPage extends React.Component {
         return (
             <React.Fragment>
                 <Header/>
-                <AllSection items={this.state.items}/>
-                <form id="write">
-                    <div>
-                        <label htmlFor="contain">écrivez un message : </label>
-                        <input id="contain" name="contain" type="text"></input>
-                    </div>
-                    <button type="button" onClick={() => {this.setStateAndSendMsg()}}>Envoyer</button>
-                </form>
+                <div id="conteneur">
+                    <AllSection items={this.state.items}/>
+                    <form id="write">
+                        <div>
+                            <label htmlFor="contain">écrivez un message : </label>
+                            <input id="contain" name="contain" type="text"></input>
+                        </div>
+                        <button type="button" onClick={() => {this.setStateAndSendMsg()}}>Envoyer</button>
+                    </form>
+                </div>
+                
             </React.Fragment>
         )
     }
 }
 
+///////////////////////////////////////
 
-class WriteSection extends React.Component {
 
-    constructor (props) {
-        super(props)
-        this.state = {
-            error: null,
-            contain: '',
-            date: '',
-        }
-    }
-
-    refresh(){
-        ReactDOM.render(<MainPage/>, document.querySelector('#app'))
-    }
-
-    sendMsg(){
-        var today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-        var yyyy = today.getFullYear();
-        today = yyyy + '/' + mm + '/' + dd;
-
-        this.setState({
-            contain: document.getElementById('contain').value,
-            date: today,
-        }, function(){
-            fetch("http://localhost:3000/api/msg",
-            {
-                headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-                },
-
-                method: "POST",
-
-                body: JSON.stringify({
-                    contain: this.state.contain,
-                    date: this.state.date,
-                })
-            })
-            .then( () => this.refresh())
-            .catch(error => this.setState({ error }) )
-        })
-    }
-
-    render(){
-        return (
-            <form id="write">
-                <div>
-                    <label htmlFor="contain">écrivez un message : </label>
-                    <input id="contain" name="contain" type="text"></input>
-                </div>
-                <button type="button" onClick={() => {this.sendMsg()}}>Envoyer</button>
-            </form>
-        )
-    }
+function AllSection(props) {
+    return (
+        <div id="allSection">
+            {props.items.map(msg =>(
+                <article key={msg.id}>
+                    <span id="author">{msg.authorName}</span>
+                    <span id="text">{msg.contain}</span>
+                    <div>
+                        <div id="like">
+                            <i className="fas fa-heart"></i>
+                            <div>{msg.like}</div>
+                            </div>
+                        <span id="date">{msg.date}</span>
+                    </div>
+                </article>
+            ))}
+        </div>
+    )
 }
+
 ///////////////////////////////////////
 
 class Header extends React.Component {
@@ -288,20 +268,13 @@ class LoginForm extends React.Component {
             })
         })
 
-        .then(function(res){ 
-            if(res.ok){
-                ReactDOM.render(<MainPage/>, document.querySelector('#app'))
-            }
-            else if (res.status == 401){
-                this.setState({
-                    errorMsg: res.message
-                })
-            }
-            else if (res.status == 402){
-                this.setState({
-                    errorMsg: res.message
-                })
-            }
+
+        .then((res) => res.json())
+        .then((res) => {
+            localStorage.setItem("token", res.token)
+            localStorage.setItem("userId", res.userId)
+            localStorage.setItem("userName", res.userName)
+            ReactDOM.render(<MainPage/>, document.querySelector('#app'))
         })
         .catch(function(err){
             console.log(err)
@@ -344,28 +317,10 @@ class LoginForm extends React.Component {
 
 //////////////////////////////////////////
 
-function AllSection(props) {
-    return (
-        <div id="all">
-            {props.items.map(msg =>(
-                <article key={msg.id}>
-                    <span id="author">{msg.authorName}</span>
-                    <span id="text">{msg.contain}</span>
-                    <div>
-                        <div id="like">
-                            <i className="fas fa-heart"></i>
-                            <div>{msg.like}</div>
-                            </div>
-                        <span id="date">{msg.date}</span>
-                    </div>
-                </article>
-            ))}
-        </div>
-    )
-}
+
 
 //////////////////////////////////////////////
 
 
 //////////////////////////////////////////
-ReactDOM.render(<MainPage/>, document.querySelector('#app'))
+ReactDOM.render(<LoginPage/>, document.querySelector('#app'))

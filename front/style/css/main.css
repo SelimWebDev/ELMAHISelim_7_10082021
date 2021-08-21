@@ -54,31 +54,31 @@
   height: 35px;
 }
 
-#all {
+#conteneur #allSection {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: auto;
 }
-#all article {
+#conteneur #allSection article {
   margin-bottom: 5px;
   display: flex;
   flex-direction: column;
   height: auto;
   border: 1px solid #e7e7e7;
 }
-#all article #author {
+#conteneur #allSection article #author {
   font-weight: bold;
   margin-bottom: 5px;
 }
-#all article #text {
+#conteneur #allSection article #text {
   margin-bottom: 5px;
 }
-#all article div {
+#conteneur #allSection article div {
   display: flex;
   justify-content: space-between;
 }
-#all article div #like {
+#conteneur #allSection article div #like {
   display: flex;
 }
 

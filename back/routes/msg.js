@@ -4,8 +4,8 @@ const tkn = require('../middleware/tkn');
 
 const msgCtrl = require('../controllers/msgCtrl.js');
 
-router.get('/', msgCtrl.getAll);
-router.post('/', msgCtrl.createMsg);
+router.get('/', tkn, msgCtrl.getAll);
+router.post('/', tkn,  msgCtrl.createMsg);
 
 
 module.exports = router;

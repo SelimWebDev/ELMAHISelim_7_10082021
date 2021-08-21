@@ -1,32 +1,38 @@
-#all {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: auto;
-
-    & article {
-        margin-bottom: 5px;
+#conteneur{
+    & #allSection {
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
         height: auto;
-        border: 1px solid rgb(231, 231, 231);
 
-        & #author {
-            font-weight: bold;
+        & article {
             margin-bottom: 5px;
-        }
-
-        & #text {
-            margin-bottom: 5px;
-        }
-
-        & div {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            height: auto;
+            border: 1px solid rgb(231, 231, 231);
 
-            & #like {
+            & #author {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+
+            & #text {
+                margin-bottom: 5px;
+            }
+
+            & div {
                 display: flex;
+                justify-content: space-between;
+
+                & #like {
+                    display: flex;
+                }
             }
         }
+    }
+
+    & #write {
+        
     }
 }
