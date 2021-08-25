@@ -8,10 +8,13 @@
   justify-content: space-around;
   margin-bottom: 50px;
 }
-#header div {
+#header .icn_contain {
   position: fixed;
   top: 38px;
   right: 0px;
+}
+#header .icn_contain i {
+  margin-right: 10px;
 }
 
 #form {
@@ -54,18 +57,32 @@
   height: 35px;
 }
 
+#conteneur {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 #conteneur #allSection {
+  width: 80%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: auto;
+  padding: 5px 5px 5px 5px;
+  border: 1px solid #e7e7e7;
 }
 #conteneur #allSection article {
+  background-color: #b9b9b9;
   margin-bottom: 5px;
   display: flex;
   flex-direction: column;
   height: auto;
   border: 1px solid #e7e7e7;
+  border-radius: 2rem;
+  min-width: 200px;
+  width: fit-content;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 #conteneur #allSection article #author {
   font-weight: bold;

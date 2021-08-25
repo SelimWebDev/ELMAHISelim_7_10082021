@@ -5,10 +5,13 @@
     justify-content: space-around;
     margin-bottom: 50px;
 
-    & div {
+    & .icn_contain {
         position: fixed;
         top: 38px;
         right: 0px;
+        & i {
+            margin-right: 10px;
+        }
     }
 }
 

@@ -27,7 +27,11 @@ const Msg = sequelize.define("msg", {
     like: {
         type: Sequelize.INTEGER,
         allowNull: false
-    },   
+    },
+    imageUrl: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },    
 }, {
     timestamps: false,
     freezeTableName: true

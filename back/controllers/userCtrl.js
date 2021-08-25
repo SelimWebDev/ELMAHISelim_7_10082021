@@ -1,6 +1,22 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const User = require("../models/user")
+const Msg = require("../models/msg")
+
+exports.deleteOne = (req, res, next) => {
+  const userId = req.body.userId
+  Msg.destroy({ where: { authorId: userId } })
+  User.destroy({ where: { user_id: userId } })
+  .then(() => res.status(200).json({message: 'utilisateur supprimé'}))
+  .catch((err) => console.log(err))
+}
+
+exports.getOne = (req, res, next) => {
+  const userId = req.params.id
+  User.findOne({ where: { user_id: userId } })
+  .then((user) => res.status(200).json(user))
+  .catch((err) => console.log(err))
+}
 
 exports.signup = (req, res, next) => {
   bcrypt.hash(req.body.mdp, 10, (error, hash) => {
@@ -27,11 +43,11 @@ exports.login = (req, res, next) => {
         return res.status(401).json({ message: 'Mot de passe incorrect !' });
       }
       res.status(200).json({
-        userName: user.pseudo,
+        userPseudo: user.pseudo,
         userId: user.user_id,
         token: jwt.sign(
           { userId: user.user_id,
-            userName: user.pseudo },
+            userPseudo: user.pseudo },
           'RANDOM_TOKEN_SECRET',
           { expiresIn: '24h' }
         )
