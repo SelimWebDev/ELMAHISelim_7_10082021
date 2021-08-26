@@ -94,6 +94,9 @@
 #conteneur #allSection article div {
   display: flex;
   justify-content: space-between;
+  /*& .delMsg {
+      display: none;
+  }*/
 }
 #conteneur #allSection article div #like {
   display: flex;

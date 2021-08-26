@@ -255,14 +255,19 @@ class MainPage extends React.Component {
             authorMsg[i].style.alignSelf='flex-end'
             authorMsg[i].style.backgroundColor = "#90b3d0"; 
         }
-
-        if (localStorage.getItem('userId') != 10){                   // si l'utilisateur n'est pas admin on n'affiche pas l'icone
+                                                                                        
+                                                                                        // gestion affichage icone suprresion msg,
+        if (localStorage.getItem('userId') != 10){                                      // si l'utilisateur n'est pas admin
             var iconeArray = document.getElementsByClassName('delMsg')
             for (var i=0; i<iconeArray.length; i++){
-                iconeArray[i].style.display = "none"
+                if (localStorage.getItem('userId') != iconeArray[i].getAttribute('authorid')){       // si  userId != authorId
+                    iconeArray[i].style.display = "none"                                             // on n'affiche pas l'icone
+                }
             }
         }
-    }
+
+    } 
+
 
     render(){
         return (
@@ -281,7 +286,7 @@ class MainPage extends React.Component {
                                     <div>{msg.like}</div>
                                 </div>
                                 <span id="date">{msg.date}</span>
-                                <i key={msg.id} className="delMsg fas fa-trash" onClick={() => {this.deleteMsg(msg.id)}}></i>
+                                <i key={msg.id} authorid={msg.authorId} className="delMsg fas fa-trash" onClick={() => {this.deleteMsg(msg.id)}}></i>
                             </div>
                         </article>
                         ))}
@@ -301,38 +306,6 @@ class MainPage extends React.Component {
 
 ///////////////////////////////////////
 
-
-/*function AllSection(props) {
-
-    if (localStorage.getItem('userId') == 10){
-        iconeArray = document.getElementsByClassName('delMsg')
-        for (var i=0; i<iconeArray.length; i++){
-            iconeArray[i].style.display = "none"
-        }
-    }
-
-    return (
-        <div id="allSection">
-            {props.items.map(msg =>(
-                <article key={msg.id} className={msg.authorId}>
-                    <span className="author">{msg.authorName}</span>
-                    <span id="text">{msg.contain}</span>
-                    <img src={msg.imageUrl}/>
-                    <div>
-                        <div id="like">
-                            <i className="fas fa-heart"></i>
-                            <div>{msg.like}</div>
-                            </div>
-                        <span id="date">{msg.date}</span>
-                        <i className="delMsg fas fa-trash" onClick={}></i>
-                    </div>
-                </article>
-            ))}
-        </div>
-    )
-}*/
-
-///////////////////////////////////////
 
 class Header extends React.Component {
     
