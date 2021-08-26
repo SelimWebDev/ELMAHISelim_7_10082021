@@ -31,10 +31,10 @@ exports.getAll = (req, res, next) => {
 exports.deleteMsg = (req, res, next) => {
     const msgId = req.body.msgId
 
-    Msg.findOne({ where: { id: msgId } })
+    Msg.findOne({ where: { id: msgId } })                                   
     .then((thing) => {
-        if (thing.imageUrl != null){
-            const filename = thing.imageUrl.split('/images/')[1];
+        if (thing.imageUrl != null){                                                                // si le msg a une image
+            const filename = thing.imageUrl.split('/images/')[1];   
             fs.unlink(`images/${filename}`, () => {
                 console.log("unlink")
                 Msg.destroy({ where: { id: msgId } })
@@ -42,7 +42,7 @@ exports.deleteMsg = (req, res, next) => {
                 .catch(error => res.status(400).json({ error }));
             });
         } else {
-            Msg.destroy({ where: { id: msgId } })
+            Msg.destroy({ where: { id: msgId } })                                                   // si il n'a pas d'image
             .then(() => res.status(200).json({ message: 'Message supprimé !'}))
             .catch(error => res.status(400).json({ error }));
         }
