@@ -6,7 +6,7 @@ const userCtrl = require('../controllers/userCtrl.js');
 
 router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
-router.get('/:id', tkn, userCtrl.getOne);
+router.get('/:id', tkn, userCtrl.getOne); // requete voir profil
 router.delete('/:id',  userCtrl.deleteOne);
 
 

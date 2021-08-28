@@ -5,6 +5,7 @@ const path = require('path');
 
 const userRoutes = require('./routes/user');
 const msgRoutes = require('./routes/msg')
+const commentRoutes = require('./routes/comment')
 
 const app = express();
 
@@ -22,4 +23,5 @@ app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth', userRoutes);
 app.use('/api/msg', msgRoutes);
+app.use('/api/comment', commentRoutes);
 module.exports = app;

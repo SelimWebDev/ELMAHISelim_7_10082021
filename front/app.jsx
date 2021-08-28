@@ -92,7 +92,6 @@ class ProfilForm extends React.Component {
     }
 }
 
-
 ///////////////////////////
 
 class SignPage extends React.Component {
@@ -121,6 +120,45 @@ class LoginPage extends React.Component {
 
 ////////////////////////////////////
 
+class OneArticle extends React.Component {                        // composant qui affiche l'article cliqué
+
+    constructor (props) {
+        super(props)
+        this.state = {
+            msg: ''
+        }
+    };
+
+    componentDidMount(){
+        fetch("http://localhost:3000/api/msg/" + this.props.msgId, // requete GET allmsg
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.token
+                },
+
+                method: "GET",
+            })
+            .then((res) => res.json())
+            .then((msg) => this.setState({
+                msg: msg
+            }))
+            .catch((error) => error)
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                <Header/>
+                <span>{this.state.msg.contain}</span>
+            </React.Fragment>
+        )
+    }
+}
+
+////////////////////////////////////
+
 class MainPage extends React.Component {
 
     constructor (props) {
@@ -135,13 +173,13 @@ class MainPage extends React.Component {
 
             file: '',
             contain: '',           // les conteneur pour l'envoie de la requete post
-            date: ''
+            date: '',
         }
     }
 
     
 
-    setStateAndSendMsg(){
+    setStateAndSendMsg(){                   
         var date = new Date();
         var today = date
 
@@ -188,7 +226,6 @@ class MainPage extends React.Component {
                     },
 
                     method: "POST",
-
                     body: data
                 })
                 .then( () => this.getAllAndSetState())
@@ -198,7 +235,7 @@ class MainPage extends React.Component {
     }
 
     getAllAndSetState(){
-        fetch("http://localhost:3000/api/msg", // requete GET au serveur
+        fetch("http://localhost:3000/api/msg", // requete GET allmsg
             {
                 headers: {
                 'Accept': 'application/json',
@@ -220,7 +257,7 @@ class MainPage extends React.Component {
                 })
             })
     }
-
+    
     deleteMsg(msg){
         this.setState({
             MsgToDelete: msg
@@ -246,7 +283,6 @@ class MainPage extends React.Component {
 
     componentDidMount(){
         this.getAllAndSetState();
-        
     }
 
     componentDidUpdate(){
@@ -269,6 +305,10 @@ class MainPage extends React.Component {
     } 
 
 
+    showArticle(id){
+        ReactDOM.render(<OneArticle msgId={id}/>, document.querySelector('#app'))
+    }
+
     render(){
         return (
             <React.Fragment>
@@ -276,19 +316,19 @@ class MainPage extends React.Component {
                 <div id="conteneur">
                     <div id="allSection">
                         {this.state.items.map(msg =>(
-                            <article key={msg.id} className={msg.authorId}>
-                            <span className="author">{msg.authorName}</span>
-                            <span id="text">{msg.contain}</span>
-                            <img src={msg.imageUrl}/>
-                            <div>
-                                <div id="like">
-                                    <i className="fas fa-heart"></i>
-                                    <div>{msg.like}</div>
+                            <article onClick={() => {this.showArticle(msg.id)}} key={msg.id} className={msg.authorId}>
+                                <span className="author">{msg.authorName}</span>
+                                <span id="text">{msg.contain}</span>
+                                <img src={msg.imageUrl}/>
+                                <div>
+                                    <div id="like">
+                                        <i className="fas fa-heart"></i>
+                                        <div>{msg.like}</div>
+                                    </div>
+                                    <span id="date">{msg.date}</span>
+                                    <i key={msg.id} authorid={msg.authorId} className="delMsg fas fa-trash" onClick={() => {this.deleteMsg(msg.id)}}></i>
                                 </div>
-                                <span id="date">{msg.date}</span>
-                                <i key={msg.id} authorid={msg.authorId} className="delMsg fas fa-trash" onClick={() => {this.deleteMsg(msg.id)}}></i>
-                            </div>
-                        </article>
+                            </article>
                         ))}
                     </div>               
                     <form id="write">
@@ -298,7 +338,6 @@ class MainPage extends React.Component {
                         <button type="button" onClick={() => {this.setStateAndSendMsg()}}>Envoyer</button>
                     </form>
                 </div>
-                
             </React.Fragment>
         )
     }

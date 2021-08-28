@@ -22,6 +22,13 @@ exports.createMsg = (req, res, next) => {                           // créer un
     .catch( (error) => res.status(400).json({error}))
 }
 
+exports.getOne = (req, res, next) => {
+    const msgId = req.params.id
+    Msg.findOne({ where: { id: msgId } })
+    .then((msg) => res.status(200).json(msg))
+    .catch((error) => res.status(400).json({error: error}))
+}
+
 exports.getAll = (req, res, next) => {
     Msg.findAll()
     .then((msg) => res.status(200).json(msg))
