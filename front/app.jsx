@@ -1,4 +1,4 @@
-class ProfilPage extends React.Component {
+class ProfilPage extends React.Component {          // composant Page Profil
     
     render(){
         return (
@@ -10,7 +10,7 @@ class ProfilPage extends React.Component {
     }
 }
 
-class ProfilForm extends React.Component {
+class ProfilForm extends React.Component {          // composant Formulaire Profil
 
     constructor (props) {
         super(props)
@@ -22,7 +22,7 @@ class ProfilForm extends React.Component {
         }
     }
 
-    deleteAccount(){
+    deleteAccount(){                                                    // fonction requette suppression de compte
         const userId = localStorage.getItem('userId')
         fetch("http://localhost:3000/api/auth/" + userId,
         {
@@ -48,7 +48,7 @@ class ProfilForm extends React.Component {
 
     getUser(){
         const userId = localStorage.getItem('userId')
-        fetch("http://localhost:3000/api/auth/" + userId, // requete GET au serveur
+        fetch("http://localhost:3000/api/auth/" + userId, // requete GET le profil
             {
                 headers: {
                 'Accept': 'application/json',
@@ -94,7 +94,7 @@ class ProfilForm extends React.Component {
 
 ///////////////////////////
 
-class SignPage extends React.Component {
+class SignPage extends React.Component {                        // composant Page inscription
     render(){
         return (
             <React.Fragment>
@@ -105,15 +105,171 @@ class SignPage extends React.Component {
     }
 }
 
+class SignForm extends React.Component {                // composant formulaire inscription
+    
+    constructor (props) {
+        super(props)
+        this.state = {
+            nom: '',
+            prenom: '',
+            pseudo: '',
+            mdp: ''
+        }
+    }
+
+    reqSign(){                                                  // requete POST inscription
+        fetch("http://localhost:3000/api/auth/signup",
+        {
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+
+            method: "POST",
+
+            body: JSON.stringify({
+                nom: this.state.nom,
+                prenom: this.state.prenom,
+                pseudo: this.state.pseudo,
+                mdp: this.state.mdp
+            })
+        })
+
+        .then(function(res){                                                                // suite à inscription
+            ReactDOM.render(<LoginPage/>, document.querySelector('#app'))                   // on affiche page login
+            console.log(res.json)       
+        })
+        .catch(function(err){
+            console.log(err)
+        })    
+    }
+
+    sign(){
+        this.setState({
+            nom: document.getElementById("nom").value,                                          // on récupère les valeur formulaire
+            prenom: document.getElementById('prenom').value,
+            pseudo: document.getElementById('pseudo').value,
+            mdp: document.getElementById('mdp').value
+        }, function(){
+            this.reqSign()                                                // on envoie au serveur pour inscription
+        })
+        
+    // A RAJOUTER //
+    // verif des champs //
+    }
+
+    render(){
+        return (
+            <form id="form">
+                <h2>Inscription</h2>
+                <div>
+                    <label htmlFor="nom">Nom : </label>
+                    <input id="nom" name="nom" type="text"></input>
+                </div>
+                <div>
+                    <label htmlFor="prenom">Prenom : </label>
+                    <input id="prenom" name="prenom" type="text"></input>
+                </div>
+                <div>
+                    <label htmlFor="pseudo">Pseudo : </label>
+                    <input id="pseudo" name="pseudo" type="text"></input>
+                </div>
+                <div>
+                    <label htmlFor="mdp">Mot de passe : </label>
+                    <input id="mdp" name="mdp" type="text"></input>
+                </div>
+                <button type="button" onClick={() => {this.sign()}}>Enregistrer</button>
+            </form>
+        )
+    }
+}
+
 //////////////////////////////////////////
 
-class LoginPage extends React.Component {
+class LoginPage extends React.Component {               // composant Page Login
     render() { 
         return (
             <React.Fragment>
                 <Header/>
                 <LoginForm/>
             </React.Fragment>
+        )
+    }
+}
+
+class LoginForm extends React.Component {           // composant formulaire Login
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            pseudo : '',
+            mdp: '',
+            errorMsg: ''
+        }
+    }
+
+    reqLogin(){      
+        fetch("http://localhost:3000/api/auth/login",
+        {
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+
+            method: "POST",
+
+            body: JSON.stringify({
+                pseudo: this.state.pseudo,
+                mdp: this.state.mdp,
+            })
+        })
+
+        .then((res) => {
+            if (res.ok){
+                res.json()
+                .then((res) => {
+                    localStorage.setItem("token", res.token)                                //si connexion ok, sauvegarde token, Id et pseudo 
+                    localStorage.setItem("userId", res.userId)                              //dans le localStorage
+                    localStorage.setItem("userPseudo", res.userPseudo)
+                    ReactDOM.render(<MainPage/>, document.querySelector('#app'))
+                })
+            }
+        })
+        .catch(function(err){
+            console.log(err)
+        })    
+    }
+
+ 
+    login(){                                                                //A RAJOUTER verif des champs
+        this.setState({                    
+            pseudo: document.getElementById('pseudo').value,                   // on récupère les valeur formulaire
+            mdp: document.getElementById('mdp').value
+        }, function(){
+            this.reqLogin()                                                    // et on envoie avec la requète           
+        })
+    }
+
+    render(){
+        return (
+            <form id="form">
+                <h2>Connexion</h2>
+                <div>
+                    <label htmlFor="pseudo">Entrez votre pseudo : </label>
+                    <input type="text" name="pseudo" id="pseudo"></input>
+                </div>
+                <div>
+                    <label htmlFor="mdp">Entrez votre mot de passe : </label>
+                    <input type="text" name="mdp" id="mdp"></input>
+                </div>
+                <div>
+                    <span>{this.errorMsg}</span>
+                </div>
+                <div id="dbButCtn">
+                    <button type="button" onClick={() => {this.login()}}>Se connecter</button>
+                    <button type="button" onClick={() => {ReactDOM.render(<SignPage/>, document.querySelector('#app'))}}>S'inscrire</button>
+                </div>
+            </form>
         )
     }
 }
@@ -125,12 +281,36 @@ class OneArticle extends React.Component {                        // composant q
     constructor (props) {
         super(props)
         this.state = {
-            msg: ''
+            msg: '',
+            commentArray: [],
+            date: '',
+            commentToSend: ''
         }
     };
 
-    componentDidMount(){
-        fetch("http://localhost:3000/api/msg/" + this.props.msgId, // requete GET allmsg
+
+    getCommentAndSetState(){
+        fetch("http://localhost:3000/api/comment/" + this.props.msgId, // requete GET les comment du msg
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.token
+                },
+
+                method: "GET",
+            })
+            .then((res) => res.json())
+            .then((comment) => {
+                this.setState({ 
+                    commentArray: comment
+                })  
+            })
+            .catch((error) => error)
+    }
+
+    getMsgAndSetState(){
+        fetch("http://localhost:3000/api/msg/" + this.props.msgId, // requete GET le msg séléctionné
             {
                 headers: {
                 'Accept': 'application/json',
@@ -147,11 +327,64 @@ class OneArticle extends React.Component {                        // composant q
             .catch((error) => error)
     }
 
+    componentDidMount(){
+        this.getMsgAndSetState()
+        this.getCommentAndSetState()
+    }
+
+    setStateAndSendComment(){                  
+        var date = new Date();
+        var today = date
+
+        this.setState({
+            contain: document.getElementById('contain').value,
+            date: today,
+        }, function(){                                                                  
+            fetch("http://localhost:3000/api/comment",
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.token
+                },
+
+                method: "POST",
+
+                body: JSON.stringify({
+                    contain: this.state.contain,
+                    date: this.state.date,
+                    msgId: this.props.msgId,
+                    authorId: localStorage.getItem("userId"),
+                    authorName: localStorage.getItem("userPseudo"),
+                })
+            })
+            .then( () => this.getCommentAndSetState() )
+            .catch(error => {
+                this.setState({ error })})
+        })
+    }
+
     render() {
         return (
             <React.Fragment>
                 <Header/>
-                <span>{this.state.msg.contain}</span>
+                <article>
+                    <span className="author">{this.state.msg.authorName}</span>
+                    <span id="text">{this.state.msg.contain}</span>
+                    <img src={this.state.msg.imageUrl}/>
+                    <div>
+                        <div id="like">
+                            <i className="fas fa-heart"></i>
+                            <div>{this.state.msg.like}</div>
+                        </div>
+                        <span id="date">{this.state.msg.date}</span>
+                    </div>
+                </article>                           
+                {this.state.commentArray.map(comment => (                       // Itération des commentaires
+                    <span key={comment.id}>{comment.contain}</span>
+                ))}
+                <input id="contain" name="contain" type="text"></input>
+                <button type="button" onClick={() => {this.setStateAndSendComment()}}>Envoyer</button>
             </React.Fragment>
         )
     }
@@ -159,7 +392,7 @@ class OneArticle extends React.Component {                        // composant q
 
 ////////////////////////////////////
 
-class MainPage extends React.Component {
+class MainPage extends React.Component {    // Comosant de la page principal, qui affiche tout les messages
 
     constructor (props) {
         super(props)
@@ -245,12 +478,12 @@ class MainPage extends React.Component {
 
                 method: "GET",
             })
-            .then((res) => res.json())
+            .then((res) => res.json() )
             .then((msgArray) => this.setState({
                 isLoaded: true,
                 items: msgArray
-            }),
-            (error) => {
+            }))
+            .catch((error) => {
                 this.setState({
                     isLoaded: true,
                     error
@@ -380,166 +613,11 @@ class Header extends React.Component {
 
 ////////////////////////////////////////
 
-class SignForm extends React.Component {
-    
-    constructor (props) {
-        super(props)
-        this.state = {
-            nom: '',
-            prenom: '',
-            pseudo: '',
-            mdp: ''
-        }
-    }
-
-    reqSign(){
-        fetch("http://localhost:3000/api/auth/signup",
-        {
-            headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-
-            method: "POST",
-
-            body: JSON.stringify({
-                nom: this.state.nom,
-                prenom: this.state.prenom,
-                pseudo: this.state.pseudo,
-                mdp: this.state.mdp
-            })
-        })
-
-        .then(function(res){ 
-            ReactDOM.render(<LoginPage/>, document.querySelector('#app'))
-            console.log(res.json)
-        })
-        .catch(function(err){
-            console.log(err)
-        })    
-    }
-
-    sign(){
-        this.setState({
-            nom: document.getElementById("nom").value,                                          // on change le state !async
-            prenom: document.getElementById('prenom').value,
-            pseudo: document.getElementById('pseudo').value,
-            mdp: document.getElementById('mdp').value
-        }, function(){
-            this.reqSign()                                                             // fonction callback
-        })
-        
-    // A RAJOUTER //
-    // verif des champs //
-    }
-
-    render(){
-        return (
-            <form id="form">
-                <h2>Inscription</h2>
-                <div>
-                    <label htmlFor="nom">Nom : </label>
-                    <input id="nom" name="nom" type="text"></input>
-                </div>
-                <div>
-                    <label htmlFor="prenom">Prenom : </label>
-                    <input id="prenom" name="prenom" type="text"></input>
-                </div>
-                <div>
-                    <label htmlFor="pseudo">Pseudo : </label>
-                    <input id="pseudo" name="pseudo" type="text"></input>
-                </div>
-                <div>
-                    <label htmlFor="mdp">Mot de passe : </label>
-                    <input id="mdp" name="mdp" type="text"></input>
-                </div>
-                <button type="button" onClick={() => {this.sign()}}>Enregistrer</button>
-            </form>
-        )
-    }
-}
 
 
 //////////////////////////////////
 
-class LoginForm extends React.Component {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            pseudo : '',
-            mdp: '',
-            errorMsg: ''
-        }
-    }
-
-    reqLogin(){
-        fetch("http://localhost:3000/api/auth/login",
-        {
-            headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-
-            method: "POST",
-
-            body: JSON.stringify({
-                pseudo: this.state.pseudo,
-                mdp: this.state.mdp,
-            })
-        })
-
-
-        
-        .then((res) => {
-            if (res.ok){
-                res.json()
-                .then((res) => {
-                    localStorage.setItem("token", res.token)
-                    localStorage.setItem("userId", res.userId)
-                    localStorage.setItem("userPseudo", res.userPseudo)
-                    ReactDOM.render(<MainPage/>, document.querySelector('#app'))
-                })
-            }
-        })
-        .catch(function(err){
-            console.log(err)
-        })    
-    }
-
- 
-    login(){                                                                //A RAJOUTER verif des champs
-        this.setState({                    
-            pseudo: document.getElementById('pseudo').value,                    // on change le state, async
-            mdp: document.getElementById('mdp').value
-        }, function(){
-            this.reqLogin()                                                             // fonction callback
-        })
-    }
-
-    render(){
-        return (
-            <form id="form">
-                <h2>Connexion</h2>
-                <div>
-                    <label htmlFor="pseudo">Entrez votre pseudo : </label>
-                    <input type="text" name="pseudo" id="pseudo"></input>
-                </div>
-                <div>
-                    <label htmlFor="mdp">Entrez votre mot de passe : </label>
-                    <input type="text" name="mdp" id="mdp"></input>
-                </div>
-                <div>
-                    <span>{this.errorMsg}</span>
-                </div>
-                <div id="dbButCtn">
-                    <button type="button" onClick={() => {this.login()}}>Se connecter</button>
-                    <button type="button" onClick={() => {ReactDOM.render(<SignPage/>, document.querySelector('#app'))}}>S'inscrire</button>
-                </div>
-            </form>
-        )
-    }
-}
 
 //////////////////////////////////////////
 

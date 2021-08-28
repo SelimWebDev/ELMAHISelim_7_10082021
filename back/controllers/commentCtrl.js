@@ -1,6 +1,6 @@
 const Comment = require('../models/comment')
 
-exports.createMsg = (req, res, next) => {                           // créer un commentaire
+exports.createComment = (req, res, next) => {                           // créer un commentaire
     var contain, date, authorId, authorName, imageUrl
     contain = req.body.contain
     date = req.body.date
@@ -14,12 +14,13 @@ exports.createMsg = (req, res, next) => {                           // créer un
 }
 
 exports.getAll = (req, res, next) => {
-    Comment.findAll()
+    const msgId = req.params.id
+    Comment.findAll({ where: { msgId: msgId }})
     .then((comment) => res.status(200).json(comment))
     .catch((error) => res.status(400).json({error: error}))
 };
 
-exports.deleteMsg = (req, res, next) => {
+exports.deleteComment = (req, res, next) => {
     const commentId = req.body.commentId
     Comment.destroy({ where: { id: commentId } })                                                   
     .then(() => res.status(200).json({ message: 'Commentaire supprimé !'}))
