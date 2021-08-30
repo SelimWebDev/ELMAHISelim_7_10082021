@@ -18,6 +18,11 @@
         justify-content: center;
     }
 
+    & #err_login {
+        display: flex;
+        justify-content: center;
+    }
+
     & div {
         width: 100%;
         display: flex;

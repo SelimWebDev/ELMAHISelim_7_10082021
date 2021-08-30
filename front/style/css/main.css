@@ -5,16 +5,14 @@
 
 #header {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-bottom: 50px;
-}
-#header .icn_contain {
-  position: fixed;
-  top: 38px;
-  right: 0px;
 }
 #header .icn_contain i {
   margin-right: 10px;
+}
+#header #back_div {
+  visibility: hidden;
 }
 
 #form {
@@ -30,6 +28,10 @@
 #form h2 {
   margin-top: 0px;
   margin-bottom: 0px;
+  display: flex;
+  justify-content: center;
+}
+#form #err_login {
   display: flex;
   justify-content: center;
 }
@@ -62,44 +64,102 @@
   flex-direction: column;
   align-items: center;
 }
-#conteneur #allSection {
-  width: 80%;
+#conteneur #write {
+  border: 1px solid #c2c2c2;
+  width: 60%;
+  padding: 5px;
+}
+#conteneur #write textarea {
+  padding: 0px;
+  font-size: 20px;
+  width: 100%;
+  height: 50px;
+  border: none;
+  resize: none;
+}
+#conteneur #write div {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
+}
+#conteneur #write div i {
+  color: red;
+  cursor: pointer;
+}
+#conteneur #write div input {
+  display: none;
+}
+#conteneur #write div button {
+  border-radius: 2rem;
+  background-color: white;
+  width: 75px;
+  color: red;
+  font-weight: 700;
+}
+#conteneur #allSection {
+  width: 60%;
+  display: flex;
+  flex-direction: column-reverse;
   height: auto;
-  padding: 5px 5px 5px 5px;
-  border: 1px solid #e7e7e7;
+  margin-top: 10px;
 }
 #conteneur #allSection article {
-  background-color: #b9b9b9;
-  margin-bottom: 5px;
+  padding: 2px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  min-height: 100px;
   height: auto;
-  border: 1px solid #e7e7e7;
-  border-radius: 2rem;
-  min-width: 200px;
-  width: fit-content;
-  padding-left: 20px;
-  padding-right: 20px;
+  border: 5px solid #bbbbff;
+  width: 100%;
 }
-#conteneur #allSection article #author {
-  font-weight: bold;
-  margin-bottom: 5px;
+#conteneur #allSection article .author {
+  font-weight: 700;
 }
 #conteneur #allSection article #text {
-  margin-bottom: 5px;
+  text-align: center;
 }
-#conteneur #allSection article div {
+#conteneur #allSection article .wrap {
   display: flex;
-  justify-content: space-between;
-  /*& .delMsg {
-      display: none;
-  }*/
+  justify-content: center;
+  border-radius: 2rem;
+  margin-bottom: 10px;
 }
-#conteneur #allSection article div #like {
+#conteneur #allSection article .wrap img {
+  object-fit: cover;
+  width: 80%;
+  height: 100%;
+  border-radius: 2rem;
+}
+#conteneur #allSection article #foot_contain {
   display: flex;
+  justify-content: space-around;
+}
+#conteneur #allSection article #foot_contain #like {
+  display: flex;
+}
+#conteneur #allSection article #foot_contain .fa-trash {
+  visibility: hidden;
+}
+#conteneur #allSection article:hover {
+  background-color: #cfcfcf;
+}
+
+#comment_div {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  align-items: center;
+  width: 70%;
+}
+#comment_div #commentList {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+#comment_div input {
+  width: 250px;
+}
+#comment_div button {
+  width: 100px;
 }
 
 /*# sourceMappingURL=main.css.map */

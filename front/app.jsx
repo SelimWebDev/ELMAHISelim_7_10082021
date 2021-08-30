@@ -1,9 +1,9 @@
 class ProfilPage extends React.Component {          // composant Page Profil
     
     render(){
-        return (
+        return (                //props back button pour afficher un bouton de retour a MainPage
             <React.Fragment>
-                <Header/>
+                <Header back_button={true}/>        
                 <ProfilForm/>
             </React.Fragment>
         )
@@ -233,6 +233,9 @@ class LoginForm extends React.Component {           // composant formulaire Logi
                     localStorage.setItem("userPseudo", res.userPseudo)
                     ReactDOM.render(<MainPage/>, document.querySelector('#app'))
                 })
+            } else {
+                res.json()
+                .then((res) => this.setState({errorMsg: res.message}))
             }
         })
         .catch(function(err){
@@ -262,8 +265,8 @@ class LoginForm extends React.Component {           // composant formulaire Logi
                     <label htmlFor="mdp">Entrez votre mot de passe : </label>
                     <input type="text" name="mdp" id="mdp"></input>
                 </div>
-                <div>
-                    <span>{this.errorMsg}</span>
+                <div id="err_contain">
+                    <span id="err_login">{this.state.errorMsg}</span>
                 </div>
                 <div id="dbButCtn">
                     <button type="button" onClick={() => {this.login()}}>Se connecter</button>
@@ -284,7 +287,7 @@ class OneArticle extends React.Component {                        // composant q
             msg: '',
             commentArray: [],
             date: '',
-            commentToSend: ''
+            commentToSend: '',
         }
     };
 
@@ -327,11 +330,6 @@ class OneArticle extends React.Component {                        // composant q
             .catch((error) => error)
     }
 
-    componentDidMount(){
-        this.getMsgAndSetState()
-        this.getCommentAndSetState()
-    }
-
     setStateAndSendComment(){                  
         var date = new Date();
         var today = date
@@ -364,27 +362,75 @@ class OneArticle extends React.Component {                        // composant q
         })
     }
 
+    deleteMsg(){
+        fetch("http://localhost:3000/api/msg",
+        {
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.token
+            },
+
+            method: "DELETE",
+
+            body: JSON.stringify({
+                msgId: this.state.msg.id
+            })
+        })
+        .then(ReactDOM.render(<MainPage/>, document.querySelector('#app')))
+        .catch(error => this.setState({ error }))
+    }
+
+    componentDidUpdate(){                                                                                                      
+        if (localStorage.getItem('userId') == 10){                                       
+            var icone = document.getElementById('delMsg') 
+            icone.style.visibility = "visible"
+        }
+    } 
+
+    componentDidMount(){
+        this.getMsgAndSetState()
+        this.getCommentAndSetState()
+    }
+
     render() {
         return (
             <React.Fragment>
-                <Header/>
-                <article>
-                    <span className="author">{this.state.msg.authorName}</span>
-                    <span id="text">{this.state.msg.contain}</span>
-                    <img src={this.state.msg.imageUrl}/>
-                    <div>
-                        <div id="like">
-                            <i className="fas fa-heart"></i>
-                            <div>{this.state.msg.like}</div>
-                        </div>
-                        <span id="date">{this.state.msg.date}</span>
+                <Header back_button={true}/>
+                <div id="conteneur">
+                    <div id="allSection">
+                        <article className={this.state.msg.authorId}>
+                            <div className="wrap">
+                                <span className="author">{this.state.msg.authorName}</span>
+                            </div>
+                            <div className="wrap">
+                                <span id="text">{this.state.msg.contain}</span>
+                            </div>
+                            <div className="wrap">
+                                <img src={this.state.msg.imageUrl}/>
+                            </div>
+                            <div id="foot_contain">
+                                <div id="like">
+                                    <i className="fas fa-heart"></i>
+                                    <div>{this.state.msg.like}</div>
+                                </div>
+                                <span id="date">{this.state.msg.date}</span>
+                                <i key={this.state.msg.id} authorid={this.state.msg.authorId} id="delMsg" className="fas fa-trash" onClick={() => {this.deleteMsg()}}></i>
+                            </div>
+                        </article>
                     </div>
-                </article>                           
-                {this.state.commentArray.map(comment => (                       // Itération des commentaires
-                    <span key={comment.id}>{comment.contain}</span>
-                ))}
-                <input id="contain" name="contain" type="text"></input>
-                <button type="button" onClick={() => {this.setStateAndSendComment()}}>Envoyer</button>
+                </div>                           
+                <div id="comment_div">
+                    {this.state.commentArray.map(comment => (                       // Itération des commentaires
+                        <div id="commentList">
+                            <span className="authorComment">{comment.authorName} : </span>
+                            <span key={comment.id} className="comment">{comment.contain}</span>
+                        </div>
+                    ))}
+                    <input id="contain" defaultValue="écrivez un commentaire" name="contain" type="text"></input>
+                    <button type="button" onClick={() => {this.setStateAndSendComment()}}>Envoyer</button>
+                </div>
+                
             </React.Fragment>
         )
     }
@@ -419,7 +465,7 @@ class MainPage extends React.Component {    // Comosant de la page principal, qu
         this.setState({
             contain: document.getElementById('contain').value,
             date: today,
-            file: document.getElementById('fileInput').files[0]
+            file: document.getElementById('fileinput').files[0]
         }, function(){
             if (!this.state.file){                                                                     // si pas de fichier
                 fetch("http://localhost:3000/api/msg",
@@ -491,52 +537,9 @@ class MainPage extends React.Component {    // Comosant de la page principal, qu
             })
     }
     
-    deleteMsg(msg){
-        this.setState({
-            MsgToDelete: msg
-        }, function(){
-            fetch("http://localhost:3000/api/msg",
-            {
-                headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
-                },
-
-                method: "DELETE",
-
-                body: JSON.stringify({
-                    msgId: this.state.MsgToDelete
-                })
-            })
-            .then(this.getAllAndSetState())
-            .catch(error => this.setState({ error }))
-        })
-    }
-
     componentDidMount(){
         this.getAllAndSetState();
     }
-
-    componentDidUpdate(){
-        const authorMsg = document.getElementsByClassName(localStorage.getItem('userId'))       // style des msg de l'utilisateur
-        for ( var i=0; i<authorMsg.length; i++){
-            authorMsg[i].style.alignSelf='flex-end'
-            authorMsg[i].style.backgroundColor = "#90b3d0"; 
-        }
-                                                                                        
-                                                                                        // gestion affichage icone suprresion msg,
-        if (localStorage.getItem('userId') != 10){                                      // si l'utilisateur n'est pas admin
-            var iconeArray = document.getElementsByClassName('delMsg')
-            for (var i=0; i<iconeArray.length; i++){
-                if (localStorage.getItem('userId') != iconeArray[i].getAttribute('authorid')){       // si  userId != authorId
-                    iconeArray[i].style.display = "none"                                             // on n'affiche pas l'icone
-                }
-            }
-        }
-
-    } 
-
 
     showArticle(id){
         ReactDOM.render(<OneArticle msgId={id}/>, document.querySelector('#app'))
@@ -547,29 +550,39 @@ class MainPage extends React.Component {    // Comosant de la page principal, qu
             <React.Fragment>
                 <Header/>
                 <div id="conteneur">
+                    <form id="write">
+                        <textarea id="contain" defaultValue="Hello, quoi de neuf ?" name="contain" type="text"></textarea>
+                        <div>
+                            <label htmlFor="fileinput">
+                                <i className="fas fa-image fa-2x"></i>
+                            </label>
+                            <input id="fileinput" type="file"></input>
+
+                            <button type="button" onClick={() => {this.setStateAndSendMsg()}}>Publier</button>
+                        </div>
+                    </form>
                     <div id="allSection">
                         {this.state.items.map(msg =>(
                             <article onClick={() => {this.showArticle(msg.id)}} key={msg.id} className={msg.authorId}>
-                                <span className="author">{msg.authorName}</span>
-                                <span id="text">{msg.contain}</span>
-                                <img src={msg.imageUrl}/>
-                                <div>
+                                <div className="wrap">
+                                    <span className="author">{msg.authorName}</span>
+                                </div>
+                                <div className="wrap">
+                                    <span id="text">{msg.contain}</span> 
+                                </div>
+                                <div className="wrap">
+                                    <img src={msg.imageUrl}/>
+                                </div>
+                                <div id="foot_contain">
                                     <div id="like">
                                         <i className="fas fa-heart"></i>
                                         <div>{msg.like}</div>
                                     </div>
                                     <span id="date">{msg.date}</span>
-                                    <i key={msg.id} authorid={msg.authorId} className="delMsg fas fa-trash" onClick={() => {this.deleteMsg(msg.id)}}></i>
                                 </div>
                             </article>
                         ))}
                     </div>               
-                    <form id="write">
-                        <label htmlFor="contain">écrivez un message : </label>
-                        <input id="contain" name="contain" type="text"></input>
-                        <i className="fas fa-image fa-2x"><input id="fileInput" type="file"></input></i>
-                        <button type="button" onClick={() => {this.setStateAndSendMsg()}}>Envoyer</button>
-                    </form>
                 </div>
             </React.Fragment>
         )
@@ -580,11 +593,15 @@ class MainPage extends React.Component {    // Comosant de la page principal, qu
 
 
 class Header extends React.Component {
+
     
     componentDidMount(){
         if (!localStorage.getItem('token')){                                         // si non token, donc non connectcté
             document.getElementById("deconnect").style.display = "none";           // on n'affiche pas le bouton de déconnexion
             document.getElementById("profil").style.display = "none";
+        }
+        if (this.props.back_button){
+            document.getElementById("back_div").style.visibility = "visible"
         }
     }
 
@@ -595,28 +612,27 @@ class Header extends React.Component {
         ReactDOM.render(<LoginPage/>, document.querySelector('#app'))
     };
 
+    goMainPage(){
+        ReactDOM.render(<MainPage/>, document.querySelector('#app'))
+    }
+
     goToProfil(){
         ReactDOM.render(<ProfilPage/>, document.querySelector('#app'))
     }
 
     render() { 
         return <div id="header">
-            <h1>Groupomania</h1>
             <div className="icn_contain">
                 <i id="profil" onClick={() => {this.goToProfil()}} className="fas fa-user-circle fa-2x"></i>
                 <i id="deconnect" onClick={() => {this.deconnect()}} className="fas fa-power-off fa-2x"></i>
             </div>
-                
+            <img src=".\logo\icon-left-font.png"/>
+            <div id="back_div" onClick={() => {this.goMainPage()}}>
+                <i className="fas fa-arrow-alt-circle-left fa-2x"></i>
+            </div>
         </div>
     }
 }
-
-////////////////////////////////////////
-
-
-
-//////////////////////////////////
-
 
 
 //////////////////////////////////////////

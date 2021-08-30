@@ -1,4 +1,5 @@
 const Msg = require('../models/msg')
+const Comment = require ('../models/comment')
 const fs = require('fs');
 
 exports.createMsg = (req, res, next) => {                           // créer un msg
@@ -37,7 +38,7 @@ exports.getAll = (req, res, next) => {
 
 exports.deleteMsg = (req, res, next) => {
     const msgId = req.body.msgId
-
+    Comment.destroy({ where: { msgId: msgId}})
     Msg.findOne({ where: { id: msgId } })                                   
     .then((thing) => {
         if (thing.imageUrl != null){                                                                // si le msg a une image

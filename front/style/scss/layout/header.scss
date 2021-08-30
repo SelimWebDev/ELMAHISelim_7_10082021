@@ -2,16 +2,17 @@
 
 #header {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     margin-bottom: 50px;
 
     & .icn_contain {
-        position: fixed;
-        top: 38px;
-        right: 0px;
         & i {
             margin-right: 10px;
         }
+    }
+
+    & #back_div {
+        visibility: hidden;
     }
 }
 
